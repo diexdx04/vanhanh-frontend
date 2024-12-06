@@ -1,15 +1,17 @@
 "use client";
+import Cookies from "js-cookie";
 import { instance } from "@/api/instance";
 import { Button, Form, FormProps, Input, message } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-
+import { useRouter } from "next/navigation";
 type FieldType = {
   password?: string;
   email: string;
 };
 
 const Page: React.FC = () => {
+  const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
 
   const [formData, setFormData] = useState<FieldType>({
@@ -33,13 +35,14 @@ const Page: React.FC = () => {
   useEffect(() => {
     const submitForm = async () => {
       try {
-        const response = await instance.post("/user/signin", formData);
+        const response = await instance.post("/auth/signin", formData);
         console.log(response, 3333);
         messageApi.success("dang nhap thanh cong!");
 
-        console.log("day la token:", response.data.access_token.access_token);
-
-        localStorage.setItem("token", response.data.access_token.access_token);
+        const refreshToken = response.data.refreshToken;
+        Cookies.set("refreshToken", refreshToken, { expires: 90 });
+        localStorage.setItem("token", response.data.token);
+        router.push("/news-feed/post");
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
           let errorMessage = "";
@@ -69,7 +72,7 @@ const Page: React.FC = () => {
     if (isSubmit) {
       submitForm();
     }
-  }, [isSubmit, formData]);
+  }, [isSubmit, formData, messageApi, router]);
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-200">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
