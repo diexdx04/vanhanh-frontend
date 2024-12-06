@@ -38,6 +38,8 @@ const Page: React.FC = () => {
   useEffect(() => {
     const submitForm = async () => {
       const { confirmPassword, ...dataToSend } = formData;
+      console.log(confirmPassword);
+
       try {
         await instance.post("/user/signup", dataToSend);
         messageApi.success("dang ki thanh cong!");
@@ -70,7 +72,7 @@ const Page: React.FC = () => {
     if (isSubmit) {
       submitForm();
     }
-  }, [isSubmit, formData]);
+  }, [isSubmit, formData, messageApi]);
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-200">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
