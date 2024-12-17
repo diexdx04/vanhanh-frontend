@@ -1,6 +1,8 @@
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { instance } from "./instance";
+import { message } from "antd";
+import { error } from "console";
 
 const useApi = () => {
   const router = useRouter();
@@ -12,8 +14,8 @@ const useApi = () => {
     return Cookies.get("refreshToken");
   };
   const refreshAccessToken = async () => {
-    console.log("refreshtoken", 777777777777);
     const refreshToken = getRefreshToken();
+
     if (!refreshToken) {
       console.log("khong co refeshToken");
       throw new Error("Khong co refreshToken");
@@ -26,7 +28,7 @@ const useApi = () => {
       localStorage.setItem("token", token);
       return token;
     } catch (error) {
-      console.error("KHong the lam moi token", error);
+      console.error("Khong the lam moi token", error);
       throw new Error("Khong the lam moi token");
     }
   };
@@ -35,6 +37,8 @@ const useApi = () => {
     const accessToken = getToken();
     if (accessToken) {
       instance.defaults.headers["Authorization"] = `Bearer ${accessToken}`;
+    } else {
+      console.log("lam gi co token");
     }
     try {
       const response = await instance({
@@ -42,11 +46,14 @@ const useApi = () => {
         url,
         data,
       });
-      return response.data;
+
+      return response.data.data;
     } catch (error: any) {
       if (error.response) {
         const { errorCode } = error.response.data;
         if (errorCode === "TOKEN_EXPIRED") {
+          console.log(2222);
+
           try {
             const newToken = await refreshAccessToken();
             instance.defaults.headers["Authorization"] = `Bearer ${newToken}`;
@@ -56,10 +63,9 @@ const useApi = () => {
               url,
               data,
             });
-            return retryResponse.data;
-          } catch (refreshError) {
-            console.error("KHong the lam moi token", refreshError);
-            router.push("/auth/signin");
+            return retryResponse.data.data;
+          } catch {
+            router.push("/auth");
           }
         }
       }

@@ -35,7 +35,7 @@ const Page: React.FC = () => {
   useEffect(() => {
     const submitForm = async () => {
       try {
-        const response = await instance.post("/auth/signin", formData);
+        const response = await instance.post("/auth", formData);
         console.log(response, 3333);
         messageApi.success("dang nhap thanh cong!");
 
@@ -45,13 +45,15 @@ const Page: React.FC = () => {
         router.push("/news-feed/post");
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
+          console.log(error, 44);
+
           let errorMessage = "";
           if (error.response) {
             if (
               error.response.data &&
               typeof error.response.data === "object"
             ) {
-              errorMessage = error.response.data.message || "da xay ra loi!";
+              errorMessage = error.response.data.errorCode || "da xay ra loi!!";
             } else {
               errorMessage = error.response.data;
             }

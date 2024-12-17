@@ -4,6 +4,7 @@ import { Button, Form, FormProps, Input, message } from "antd";
 import axios from "axios";
 import { instance } from "@/api/instance";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type FieldType = {
   name?: string;
@@ -14,6 +15,7 @@ type FieldType = {
 
 const Page: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
+  const router = useRouter();
 
   const [formData, setFormData] = useState<FieldType>({
     name: "",
@@ -41,8 +43,9 @@ const Page: React.FC = () => {
       console.log(confirmPassword);
 
       try {
-        await instance.post("/user/signup", dataToSend);
+        await instance.post("/user", dataToSend);
         messageApi.success("dang ki thanh cong!");
+        router.push("/verification");
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
           let errorMessage = "";
@@ -51,7 +54,8 @@ const Page: React.FC = () => {
               error.response.data &&
               typeof error.response.data === "object"
             ) {
-              errorMessage = error.response.data.message || "da xay ra loi!";
+              errorMessage =
+                error.response.data.userMessage || "da xay ra loi!";
             } else {
               errorMessage = error.response.data;
             }

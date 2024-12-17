@@ -36,7 +36,7 @@ const Post = ({
 
       try {
         const values = await form.validateFields();
-        await api("POST", "posts/create", values);
+        await api("POST", "posts", values);
 
         messageApi.open({
           type: "success",
