@@ -1,8 +1,6 @@
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { instance } from "./instance";
-import { message } from "antd";
-import { error } from "console";
 
 const useApi = () => {
   const router = useRouter();
