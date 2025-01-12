@@ -22,7 +22,7 @@ const useApi = () => {
       const response = await instance.post("/auth/refresh-token", {
         refreshToken,
       });
-      const { token } = response.data;
+      const { token } = response.data.data;
       localStorage.setItem("token", token);
       return token;
     } catch (error) {
@@ -48,10 +48,8 @@ const useApi = () => {
       return response.data.data;
     } catch (error: any) {
       if (error.response) {
-        const { errorCode } = error.response.data;
+        const errorCode = error.response.data.message;
         if (errorCode === "TOKEN_EXPIRED") {
-          console.log(2222);
-
           try {
             const newToken = await refreshAccessToken();
             instance.defaults.headers["Authorization"] = `Bearer ${newToken}`;

@@ -21,7 +21,6 @@ const Page: React.FC = () => {
   const [isSubmit, setIsSubmit] = useState(false);
 
   const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-    console.log("values:", values);
     setFormData(values);
     setIsSubmit(true);
   };
@@ -39,29 +38,17 @@ const Page: React.FC = () => {
         console.log(response, 3333);
         messageApi.success("dang nhap thanh cong!");
 
-        const refreshToken = response.data.refreshToken;
+        const refreshToken = response.data.data.refreshToken;
         Cookies.set("refreshToken", refreshToken, { expires: 90 });
-        localStorage.setItem("token", response.data.token);
-        router.push("/news-feed/post");
+        localStorage.setItem("token", response.data.data.token);
+        localStorage.setItem("userId", response.data.data.userId);
+
+        router.push("/news");
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
           console.log(error, 44);
-
-          let errorMessage = "";
-          if (error.response) {
-            if (
-              error.response.data &&
-              typeof error.response.data === "object"
-            ) {
-              errorMessage = error.response.data.errorCode || "da xay ra loi!!";
-            } else {
-              errorMessage = error.response.data;
-            }
-          } else {
-            errorMessage = error.message;
-          }
-          console.error("loi:", errorMessage);
-          messageApi.error(errorMessage);
+          const messageErr = error.response?.data.userMessage;
+          messageApi.error(messageErr);
         } else {
           console.error("loi khong xac dinh:", error);
           messageApi.error("Dang nhap that bai");

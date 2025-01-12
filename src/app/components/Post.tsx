@@ -2,18 +2,14 @@
 import useApi from "@/api/useApi";
 import type { FormProps } from "antd";
 import { Button, Form, Input, message } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 type FieldType = {
   title: string;
   content: string;
 };
 
-const Post = ({
-  setRefreshAt,
-}: {
-  setRefreshAt: React.Dispatch<React.SetStateAction<Date>>;
-}) => {
+const Post = () => {
   const { api } = useApi();
   const token = localStorage.getItem("token");
   const [messageApi, contextHolder] = message.useMessage();
@@ -44,29 +40,22 @@ const Post = ({
           duration: 3,
         });
         form.resetFields();
-      } catch (error: any) {
+      } catch (error) {
         console.log(error, 55);
-        if (error.response) {
-          const { errorCode } = error.response.data;
-          if (errorCode === "TOKEN_EXPIRED") {
-            messageApi.error("Token het han vui long dang nhap lai");
-          } else {
-            messageApi.error("Khong the chia se!!!");
-          }
-        } else {
-          messageApi.error("Khong the chia se!");
-        }
+
+        messageApi.error("Khong the chia se!");
       } finally {
         setIsSubmit(false);
-        setRefreshAt(new Date());
       }
     };
 
     submitPost();
-  }, [isSubmit, form, messageApi, token, setRefreshAt, api]);
+  }, [isSubmit, form, messageApi, token, api]);
+
+  console.log("component post");
 
   return (
-    <>
+    <div>
       {contextHolder}
       <Form
         form={form}
@@ -99,7 +88,7 @@ const Post = ({
           </Button>
         </Form.Item>
       </Form>
-    </>
+    </div>
   );
 };
 

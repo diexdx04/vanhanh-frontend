@@ -1,12 +1,8 @@
-// NewsFeed.tsx
 "use client";
 import News from "@/app/components/news";
 import Post from "@/app/components/Post";
-import { useState } from "react";
 
 const NewsFeed = () => {
-  const [refreshAt, setRefreshAt] = useState(new Date());
-
   return (
     <div className="min-h-screen bg-gray-200 p-4 flex flex-col items-center">
       <div className="max-w-xl w-full bg-white rounded-md shadow-md mb-6 p-6">
@@ -14,12 +10,12 @@ const NewsFeed = () => {
       </div>
 
       <div className="max-w-xl w-full bg-white rounded-md shadow-md mb-6 p-6">
-        <Post setRefreshAt={setRefreshAt} />
+        <Post />
       </div>
 
-      <div className="max-w-xl w-full bg-white rounded-md shadow-md p-6">
+      <div className="max-w-xl w-full bg-gray-400 rounded-md shadow-md p-6 mb-6">
         <h3 className="text-xl font-semibold mb-4">Bảng Tin</h3>
-        <News refreshAt={refreshAt} />
+        <News />
       </div>
     </div>
   );
