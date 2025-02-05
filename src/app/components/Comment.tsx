@@ -96,6 +96,8 @@ const Comment: React.FC<CommentTableProps> = ({ postId }) => {
     switch (key) {
       case "delete":
         try {
+          console.log(111);
+
           await api("DELETE", `/posts/${postId}/comment/${commentId}`, {});
           // setComments((prev) =>
           //   prev.filter((comment) => comment.id !== commentId)

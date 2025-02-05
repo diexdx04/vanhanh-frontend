@@ -5,20 +5,18 @@ import { instance } from "./instance";
 const useApi = () => {
   const router = useRouter();
 
-  const getToken = () => {
+  const getToken = (): string | null => {
     return localStorage.getItem("token");
   };
-  const getRefreshToken = () => {
-    return Cookies.get("refreshToken");
-  };
-  const refreshAccessToken = async () => {
-    const refreshToken = getRefreshToken();
 
-    if (!refreshToken) {
-      console.log("khong co refeshToken");
-      throw new Error("Khong co refreshToken");
-    }
+  const getRefreshToken = (): string | null => {
+    const refreshToken = Cookies.get("refreshToken");
+    return refreshToken !== undefined ? refreshToken : null;
+  };
+
+  const refreshAccessToken = async () => {
     try {
+      const refreshToken = getRefreshToken();
       const response = await instance.post("/auth/refresh-token", {
         refreshToken,
       });
@@ -26,29 +24,41 @@ const useApi = () => {
       localStorage.setItem("token", token);
       return token;
     } catch (error) {
-      console.error("Khong the lam moi token", error);
-      throw new Error("Khong the lam moi token");
+      router.push("/signin");
+      throw error;
     }
   };
 
   const api = async (method: string, url: string, data: object) => {
-    const accessToken = getToken();
-    if (accessToken) {
-      instance.defaults.headers["Authorization"] = `Bearer ${accessToken}`;
-    } else {
-      console.log("lam gi co token");
-    }
+    console.log(1111111);
+
+    const token = getToken();
+    const refreshToken = getRefreshToken();
+
     try {
+      if (token) {
+        instance.defaults.headers["Authorization"] = `Bearer ${token}`;
+      } else if (refreshToken) {
+        const newToken = await refreshAccessToken();
+        instance.defaults.headers["Authorization"] = `Bearer ${newToken}`;
+      } else {
+        router.push("/signin");
+        return;
+      }
+
       const response = await instance({
         method,
         url,
         data,
       });
-
+      console.log(333333333333);
       return response.data.data;
     } catch (error: any) {
+      console.log(5);
       if (error.response) {
+        console.log(6);
         const errorCode = error.response.data.message;
+
         if (errorCode === "TOKEN_EXPIRED") {
           try {
             const newToken = await refreshAccessToken();
@@ -60,14 +70,17 @@ const useApi = () => {
               data,
             });
             return retryResponse.data.data;
-          } catch {
-            router.push("/auth");
+          } catch (error) {
+            console.log(error);
+            router.push("/signin");
           }
         }
+      } else {
+        router.push("/signin");
       }
-      throw error;
     }
   };
+
   return { api };
 };
 

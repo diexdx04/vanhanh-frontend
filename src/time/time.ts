@@ -6,13 +6,13 @@ export const time = (date: Date): string => {
   const seconds = now.diff(past, "seconds");
 
   if (seconds < 60) {
-    return "vừa mới";
+    return "vừa xong";
   } else if (seconds < 3600) {
     const minutes = Math.floor(seconds / 60);
-    return `${minutes} phút trước`;
+    return `${minutes} phút `;
   } else if (seconds < 86400) {
     const hours = Math.floor(seconds / 3600);
-    return `${hours} giờ trước`;
+    return `${hours} giờ `;
   } else {
     const days = Math.floor(seconds / 86400);
     if (days >= 1 && days <= 2) {

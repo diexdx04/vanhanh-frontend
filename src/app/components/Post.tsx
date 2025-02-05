@@ -1,12 +1,14 @@
 "use client";
 import useApi from "@/api/useApi";
 import type { FormProps } from "antd";
-import { Button, Form, Input, message } from "antd";
+import { Button, Form, Input, message, Upload } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 type FieldType = {
-  title: string;
   content: string;
+  fileList: any[];
 };
 
 const Post = () => {
@@ -15,11 +17,18 @@ const Post = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
 
   const onFinish: FormProps<FieldType>["onFinish"] = async () => {
+    const values = await form.validateFields();
+
+    if (!values.content.trim()) {
+      messageApi.error("Nội dung không được để trống!");
+      return;
+    }
+
     setIsSubmit(true);
   };
-
   const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
     errorInfo
   ) => {
@@ -32,18 +41,29 @@ const Post = () => {
 
       try {
         const values = await form.validateFields();
-        await api("POST", "posts", values);
+        const formData = new FormData();
+
+        formData.append("content", values.content);
+
+        const fileList = Array.isArray(values.fileList) ? values.fileList : [];
+        fileList.forEach((file: any) => {
+          console.log(file.originFileObj, 777);
+
+          formData.append("image", file.originFileObj);
+        });
+
+        await api("POST", "posts", formData);
 
         messageApi.open({
           type: "success",
-          content: "Ban da chia se thanh cong!",
+          content: "Bạn đã chia sẻ thành công!",
           duration: 3,
         });
         form.resetFields();
+        setImageUrls([]);
       } catch (error) {
-        console.log(error, 55);
-
-        messageApi.error("Khong the chia se!");
+        console.log(error);
+        messageApi.error("Không thể chia sẻ!");
       } finally {
         setIsSubmit(false);
       }
@@ -51,8 +71,6 @@ const Post = () => {
 
     submitPost();
   }, [isSubmit, form, messageApi, token, api]);
-
-  console.log("component post");
 
   return (
     <div>
@@ -67,20 +85,43 @@ const Post = () => {
         autoComplete="off"
       >
         <Form.Item<FieldType>
-          label="Title"
-          name="title"
-          rules={[{ required: true, message: "Please input your title!" }]}
-        >
-          <Input placeholder="Enter post title" />
-        </Form.Item>
-
-        <Form.Item<FieldType>
-          label="Content"
           name="content"
           rules={[{ required: true, message: "Please input your content!" }]}
         >
-          <Input.TextArea placeholder="Enter post content" rows={4} />
+          <Input.TextArea placeholder="Bạn đang nghĩ gì?" rows={4} />
         </Form.Item>
+
+        <Form.Item>
+          <Form.Item name="fileList" valuePropName="fileList" noStyle>
+            <Upload
+              beforeUpload={() => false}
+              multiple
+              accept="image/*"
+              onChange={(info) => {
+                form.setFieldsValue({ fileList: info.fileList });
+                const urls = info.fileList.map((file: any) =>
+                  URL.createObjectURL(file.originFileObj)
+                );
+                setImageUrls(urls);
+              }}
+            >
+              <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+            </Upload>
+          </Form.Item>
+        </Form.Item>
+
+        <div style={{ marginTop: 16, display: "flex", gap: "8px" }}>
+          {imageUrls.map((url, index) => (
+            <Image
+              key={index}
+              src={url}
+              alt={`upload-${index}`}
+              width={100}
+              height={100}
+              style={{ objectFit: "cover" }}
+            />
+          ))}
+        </div>
 
         <Form.Item>
           <Button type="primary" htmlType="submit" style={{ float: "right" }}>

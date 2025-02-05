@@ -1,6 +1,7 @@
 "use client";
 import useApi from "@/api/useApi";
-import { Modal } from "antd";
+import { message, Modal } from "antd";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
@@ -25,6 +26,7 @@ const Liked: React.FC<LikeProps> = ({
   const [likedUsers, setLikedUsers] = useState<User[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [likeCount, setLikeCount] = useState<number>(initialLikesCount);
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     console.log("component like");
@@ -51,8 +53,14 @@ const Liked: React.FC<LikeProps> = ({
       await api("POST", `posts/${postId}/like`, { liked: !liked });
       const newLiked = !liked;
       setLiked(newLiked);
-    } catch (error) {
-      console.log(error);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.data.userMessage === "TAI NGUYEN KHONG TON TAI") {
+          messageApi.error("Bài viết đã bị xóa!");
+        }
+      } else {
+        messageApi.error("Lỗi cmt!");
+      }
     }
   };
 
@@ -67,6 +75,7 @@ const Liked: React.FC<LikeProps> = ({
 
   return (
     <div>
+      {contextHolder}
       <button className="mr-2 flex items-center" onClick={handleShowModal}>
         {likeCount} Lượt thích
       </button>

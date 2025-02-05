@@ -1,11 +1,15 @@
 import { socket } from "@/api/instance";
 import useApi from "@/api/useApi";
 import { time } from "@/time/time";
-import { Button } from "antd";
+import { Button, Dropdown, message, Popconfirm, Space } from "antd";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FaRegComment } from "react-icons/fa";
 import Liked from "./Like";
 import PostDetailModal from "./PostDetail";
+import ImageDetail from "./ImageDetail";
+import axios from "axios";
+import moment from "moment";
 
 type User = {
   id: number;
@@ -20,9 +24,9 @@ type NewsItem = {
   author: User;
   liked: boolean;
   id: number;
-  title: string;
   authorId: number;
-  content: string;
+  content?: string;
+  images?: { id: number; url: string; postId: number }[];
   createdAt: Date;
 };
 
@@ -35,6 +39,9 @@ const News = () => {
   const [loading, setLoading] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
+  const [messageApi, contextHolder] = message.useMessage();
+  const currentUserId = parseInt(localStorage.getItem("userId") || "0");
 
   const fetchPosts = async () => {
     if (loading || !isEndOfPosts) return;
@@ -47,18 +54,19 @@ const News = () => {
         {}
       );
 
-      console.log(555, response);
-
       if (response.length === 0) {
         setIsEndOfPosts(false);
-        console.log("Hết bài viết!");
       } else {
         setNewsData((prev) => [...prev, ...response]);
-        console.log("Tổng số bài viết:", response.length + newsData.length);
         setLastPostId(response[response.length - 1].id);
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const errorDelete = error.response?.data.message;
+        messageApi.error(errorDelete);
+      } else {
+        messageApi.error("Không thể tải bài viết");
+      }
     } finally {
       setLoading(false);
     }
@@ -70,7 +78,8 @@ const News = () => {
 
   useEffect(() => {
     socket.on("newPost", (newPost) => {
-      console.log("Bài viết mới:", newPost);
+      console.log(newPost);
+
       setNewsData((prev) => [newPost, ...prev]);
     });
     return () => {
@@ -94,19 +103,138 @@ const News = () => {
     setSelectedPostId(null);
   };
 
+  const handleImageClick = (imageUrl: string) => {
+    setSelectedImageUrl(imageUrl);
+  };
+
+  const closeImageDetail = () => {
+    setSelectedImageUrl(null);
+  };
+
+  const handleOptions = async (key: string, newsId: number) => {
+    switch (key) {
+      case "delete":
+        try {
+          console.log("delete post");
+          await api("DELETE", `posts/${newsId}`, {});
+        } catch (error: unknown) {
+          if (axios.isAxiosError(error)) {
+            const errorDelete = error.response?.data.userMessage;
+            messageApi.error(errorDelete);
+          } else {
+            messageApi.error("Xóa thất bại");
+          }
+        }
+        break;
+
+      case "edit":
+        console.log("edit post");
+        break;
+
+      case "report":
+        console.log(`Báo cáo: ${newsId}`);
+        break;
+
+      default:
+        console.log("Hành động không hợp lệ");
+        break;
+    }
+  };
+
+  const getMenuItems = (userId: number, newsId: number) => {
+    const items = [];
+    if (userId === currentUserId) {
+      items.push({
+        label: (
+          <Popconfirm
+            title="Chắc chưa?"
+            onConfirm={() => handleOptions("delete", newsId)}
+            okText="Có"
+            cancelText="Không"
+          >
+            <a>Xóa</a>
+          </Popconfirm>
+        ),
+        key: "delete",
+      });
+
+      items.push({
+        label: "Chỉnh sửa",
+        key: "edit",
+        onClick: () => handleOptions("edit", newsId),
+      });
+    } else {
+      items.push({
+        label: "Báo cáo",
+        key: "report",
+        onClick: () => handleOptions("report", newsId),
+      });
+    }
+    return items;
+  };
+
   return (
     <div>
+      {contextHolder}
       {newsData.map((news) => (
         <div
           key={news.id}
           className="bg-white rounded-md shadow-md p-4 mb-4 w-full"
         >
-          <h3 className="font-semibold text-lg">{news.author.name}</h3>
-          <p className="mt-2">{time(news.createdAt)}</p>
-          <h2 className="font-semibold text-lg">{news.title}</h2>
-          <p className="mt-2">{news.content}</p>
-          <hr className="mt-4 border-black" />
+          <div className="flex justify-between">
+            <h3 className="font-semibold text-lg">{news.author.name}</h3>
 
+            <Dropdown
+              menu={{
+                items: getMenuItems(news.authorId, news.id),
+              }}
+              trigger={["click"]}
+            >
+              <span
+                onClick={(e) => e.preventDefault()}
+                style={{ cursor: "pointer" }}
+                tabIndex={0}
+              >
+                <Space>...</Space>
+              </span>
+            </Dropdown>
+          </div>
+          <p
+            className="mt-2 text-small"
+            title={moment(news.createdAt).format("DD/MM/YYYY HH:mm")}
+          >
+            {time(news.createdAt)}
+          </p>
+          <p className="mt-2 text-lg">{news.content}</p>
+
+          {news.images && (
+            <div className="flex">
+              {news.images.slice(0, 3).map((image) => (
+                <div
+                  key={image.id}
+                  className="flex-1 mr-2 relative cursor-pointer"
+                  onClick={() => handleImageClick(image.url)}
+                >
+                  <Image
+                    src={image.url}
+                    alt={`Image ${image.id}`}
+                    layout="responsive"
+                    width={100}
+                    height={100}
+                    className="rounded-md"
+                  />
+                </div>
+              ))}
+              {news.images.length > 3 && (
+                <div className="flex-1 relative flex items-center justify-center bg-gray-200 rounded-md">
+                  <span className="text-lg font-semibold">
+                    +{news.images.length - 3}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+          <hr className="mt-4 border-black" />
           <div className="flex justify-between items-center mt-2">
             <Liked
               postId={news.id}
@@ -140,6 +268,10 @@ const News = () => {
           onClose={closeDetailPost}
           postIdDetail={selectedPostId}
         />
+      )}
+
+      {selectedImageUrl && (
+        <ImageDetail imageUrl={selectedImageUrl} onClose={closeImageDetail} />
       )}
     </div>
   );
