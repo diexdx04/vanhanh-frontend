@@ -16,6 +16,8 @@ const FollowerList: React.FC<FollowerListProps> = ({
   const { api } = useApi();
   const fetchFollowers = async () => {
     const response = await api("GET", `profile/${profileId}/follower`, {});
+    console.log(response, 777);
+
     return response;
   };
 
