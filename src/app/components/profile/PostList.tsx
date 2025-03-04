@@ -5,12 +5,12 @@ import { Button, Dropdown, message, Popconfirm, Space } from "antd";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FaRegComment } from "react-icons/fa";
-import Liked from "./Like";
-import PostDetailModal from "./PostDetail";
-import ImageDetail from "./ImageDetail";
 import axios from "axios";
 import moment from "moment";
 import Link from "next/link";
+import Liked from "../Like";
+import PostDetailModal from "../PostDetail";
+import ImageDetail from "../ImageDetail";
 
 type User = {
   id: number;
@@ -31,7 +31,16 @@ type NewsItem = {
   createdAt: Date;
 };
 
-const News = () => {
+console.log("day la posstLIst");
+
+interface PostListProps {
+  profileId: number;
+  profileName: string;
+}
+
+const PostList: React.FC<PostListProps> = ({ profileId, profileName }) => {
+  console.log(profileId, 123456789);
+
   const { api } = useApi();
   const [newsData, setNewsData] = useState<NewsItem[]>([]);
   const [lastPostId, setLastPostId] = useState<number | null>(null);
@@ -51,9 +60,10 @@ const News = () => {
     try {
       const response = await api(
         "GET",
-        `posts?lastPostId=${lastPostId}&limit=${limit}`,
+        `/profile/${profileId}/post?lastPostId=${lastPostId}&limit=${limit}`,
         {}
       );
+      console.log(response, 1234567);
 
       if (response.length === 0) {
         setIsEndOfPosts(false);
@@ -75,12 +85,11 @@ const News = () => {
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [profileId]); // Thêm profileId vào dependency array
 
   useEffect(() => {
     socket.on("newPost", (newPost) => {
       console.log(newPost);
-
       setNewsData((prev) => [newPost, ...prev]);
     });
     return () => {
@@ -175,7 +184,9 @@ const News = () => {
   };
 
   return (
-    <div>
+    <div className="max-w-screen-lg mx-auto w-4/5">
+      {" "}
+      {/* Thêm lớp CSS tại đây */}
       {contextHolder}
       {newsData.map((news) => (
         <div
@@ -184,13 +195,11 @@ const News = () => {
         >
           <div className="flex justify-between">
             <Link href={`/profile/${news.authorId}`}>
-              <h3 className="font-semibold text-lg">{news.author.name}</h3>
+              <h3 className="font-semibold text-lg">{profileName}</h3>
             </Link>
 
             <Dropdown
-              menu={{
-                items: getMenuItems(news.authorId, news.id),
-              }}
+              menu={{ items: getMenuItems(news.authorId, news.id) }}
               trigger={["click"]}
             >
               <span
@@ -254,7 +263,6 @@ const News = () => {
           </div>
         </div>
       ))}
-
       <Button
         onClick={loadMorePosts}
         disabled={loading || !isEndOfPosts}
@@ -264,7 +272,6 @@ const News = () => {
       >
         Tải thêm bài viết
       </Button>
-
       {selectedPostId && (
         <PostDetailModal
           onclick={isModalVisible}
@@ -272,7 +279,6 @@ const News = () => {
           postIdDetail={selectedPostId}
         />
       )}
-
       {selectedImageUrl && (
         <ImageDetail imageUrl={selectedImageUrl} onClose={closeImageDetail} />
       )}
@@ -280,4 +286,4 @@ const News = () => {
   );
 };
 
-export default News;
+export default PostList;
