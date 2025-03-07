@@ -184,7 +184,7 @@ const PostList: React.FC<PostListProps> = ({ profileId, profileName }) => {
   };
 
   return (
-    <div className="max-w-screen-lg mx-auto w-4/5">
+    <div className="max-w-screen-lg mx-auto w-full ">
       {" "}
       {/* Thêm lớp CSS tại đây */}
       {contextHolder}
@@ -224,7 +224,7 @@ const PostList: React.FC<PostListProps> = ({ profileId, profileName }) => {
               {news.images.slice(0, 3).map((image) => (
                 <div
                   key={image.id}
-                  className="flex-1 mr-2 relative cursor-pointer"
+                  className="flex-1 mr-2 relative cursor-pointer overflow-hidden"
                   onClick={() => handleImageClick(image.url)}
                 >
                   <Image
@@ -233,7 +233,7 @@ const PostList: React.FC<PostListProps> = ({ profileId, profileName }) => {
                     layout="responsive"
                     width={100}
                     height={100}
-                    className="rounded-md"
+                    className="rounded-md h-32 w-full object-cover"
                   />
                 </div>
               ))}

@@ -35,7 +35,7 @@ const FollowerList: React.FC<FollowerListProps> = ({
   }
 
   return (
-    <div className="bg-gray-100 p-5">
+    <div className="bg-white p-5 ">
       <div className="max-w-screen-md mx-auto">
         <div className="flex items-center mb-4">
           <h2 className="text-xl mr-4">
