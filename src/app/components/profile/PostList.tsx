@@ -11,6 +11,7 @@ import Link from "next/link";
 import Liked from "../Like";
 import PostDetailModal from "../PostDetail";
 import ImageDetail from "../ImageDetail";
+import Post from "../Post";
 
 type User = {
   id: number;
@@ -186,8 +187,10 @@ const PostList: React.FC<PostListProps> = ({ profileId, profileName }) => {
   return (
     <div className="max-w-screen-lg mx-auto w-full ">
       {" "}
-      {/* Thêm lớp CSS tại đây */}
       {contextHolder}
+      <div className="max-w-xl w-full bg-white rounded-md shadow-md mb-6 p-6">
+        <Post />
+      </div>
       {newsData.map((news) => (
         <div
           key={news.id}

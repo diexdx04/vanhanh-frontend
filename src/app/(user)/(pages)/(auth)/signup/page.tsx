@@ -21,8 +21,6 @@ const Page: React.FC = () => {
 
   const mutation = useMutation({
     mutationFn: async (data: FieldType) => {
-      console.log(data, 999);
-
       const { confirmPassword, ...dataToSend } = data;
       const response = await instance.post("/user", dataToSend);
       return response.data.data;

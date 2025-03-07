@@ -86,10 +86,8 @@ const Header = () => {
     },
   ];
 
-  console.log(user?.avatars?.[0]?.url, 999);
-
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 dark:bg-gray-800">
+    <header className="fixed sticky top-0 z-50 bg-white border-b border-gray-200 dark:bg-gray-800">
       <nav className="lg:px-6 py-2.5">
         <div className="flex items-center max-w-screen-xl">
           <Button
