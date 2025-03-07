@@ -15,6 +15,7 @@ import Link from "next/link";
 type User = {
   id: number;
   name: string;
+  avatars?: { id: number; url: string; createdAt: Date; updatedAt: Date }[];
 };
 
 type NewsItem = {
@@ -183,9 +184,28 @@ const News = () => {
           className="bg-white rounded-md shadow-md p-4 mb-4 w-full"
         >
           <div className="flex justify-between">
-            <Link href={`/profile/${news.authorId}`}>
-              <h3 className="font-semibold text-lg">{news.author.name}</h3>
-            </Link>
+            <div className="flex items-center">
+              <Link href={`/profile/${news.authorId}`}>
+                <Image
+                  src={news.author?.avatars?.[0]?.url || "/image/avt.jpg"}
+                  alt="User Avatar"
+                  width={30}
+                  height={30}
+                  className="rounded-full mr-2 "
+                />
+              </Link>
+              <div>
+                <Link href={`/profile/${news.authorId}`}>
+                  <h3 className="font-semibold text-lg">{news.author.name}</h3>
+                </Link>
+                <p
+                  className="mt-1 text-xs"
+                  title={moment(news.createdAt).format("DD/MM/YYYY HH:mm")}
+                >
+                  {time(news.createdAt)}
+                </p>
+              </div>
+            </div>
 
             <Dropdown
               menu={{
@@ -202,12 +222,7 @@ const News = () => {
               </span>
             </Dropdown>
           </div>
-          <p
-            className="mt-2 text-small"
-            title={moment(news.createdAt).format("DD/MM/YYYY HH:mm")}
-          >
-            {time(news.createdAt)}
-          </p>
+
           <p className="mt-2 text-lg">{news.content}</p>
 
           {news.images && (
