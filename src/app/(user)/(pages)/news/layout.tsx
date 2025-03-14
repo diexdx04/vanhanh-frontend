@@ -7,16 +7,12 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  console.log("day la layout", 777);
-
   return (
-    <html lang="en">
-      <body>
-        <QueryProvider>
-          <Header />
-          {children}
-        </QueryProvider>
-      </body>
-    </html>
+    <>
+      <QueryProvider>
+        <Header />
+        {children}
+      </QueryProvider>
+    </>
   );
 }

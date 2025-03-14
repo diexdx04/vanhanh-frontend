@@ -34,8 +34,6 @@ const Page: React.FC = () => {
     },
     onError: (error: unknown) => {
       if (axios.isAxiosError(error)) {
-        console.log(error, 8888);
-
         const errorComment = error.response?.data.userMessage;
         console.log(errorComment, 77777);
 

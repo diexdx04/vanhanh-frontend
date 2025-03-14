@@ -20,7 +20,6 @@ const Header = () => {
     if (!response || !response.name) {
       throw new Error("User data not found.");
     }
-    console.log(response, 9999);
 
     return response;
   };
@@ -142,7 +141,7 @@ const Header = () => {
                 className="flex items-center justify-center w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 relative"
               >
                 <Image
-                  src={user?.avatars?.[0]?.url}
+                  src={user?.avatars?.[0]?.url || "/image/avt.jpg"}
                   alt="User Avatar"
                   layout="fill"
                   objectFit="cover"

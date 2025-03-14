@@ -9,13 +9,11 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <QueryProvider>
-          <Header />
-          {children}
-        </QueryProvider>
-      </body>
-    </html>
+    <>
+      <QueryProvider>
+        <Header />
+        {children}
+      </QueryProvider>
+    </>
   );
 }

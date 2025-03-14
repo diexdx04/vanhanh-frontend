@@ -30,8 +30,6 @@ const useApi = () => {
   };
 
   const api = async (method: string, url: string, data: object) => {
-    console.log(1111111);
-
     const token = getToken();
     const refreshToken = getRefreshToken();
 
@@ -51,12 +49,9 @@ const useApi = () => {
         url,
         data,
       });
-      console.log(333333333333);
       return response.data.data;
     } catch (error: any) {
-      console.log(5);
       if (error.response) {
-        console.log(6);
         const errorCode = error.response.data.message;
 
         if (errorCode === "TOKEN_EXPIRED") {

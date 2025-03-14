@@ -2,12 +2,11 @@
 
 import useApi from "@/api/useApi";
 
-import { useQuery } from "@tanstack/react-query";
-import { message, Spin } from "antd";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button, message, Spin } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
 import { FaLock } from "react-icons/fa";
 import { GiWorld } from "react-icons/gi";
 
@@ -15,23 +14,28 @@ const ProfileHeader = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const params = useParams();
-  const [isFollowing, setIsFollowing] = useState(false);
   const profileId = Number(params.profileId);
   const userId = localStorage.getItem("userId");
   const { api } = useApi();
+  const queryClient = useQueryClient();
 
-  const handleFollow = async (profileId: number) => {
-    await api("POST", `/profile/${profileId}/follow`, {});
-    refetch();
-  };
+  const { mutate } = useMutation({
+    mutationFn: async (profileId: number) => {
+      await api("POST", `/profile/${profileId}/follow`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["profile"],
+      });
+    },
+  });
 
   const fetchProfile = async () => {
     const response = await api("GET", `/profile/${profileId}`, {});
-    setIsFollowing(response.isFollowing);
     return response;
   };
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["profile"],
     queryFn: fetchProfile,
   });
@@ -50,6 +54,9 @@ const ProfileHeader = () => {
       content: "Tính năng đang phát triển!",
     });
   };
+
+  console.log(data, 12345);
+
   return (
     <div>
       {contextHolder}
@@ -65,10 +72,10 @@ const ProfileHeader = () => {
           />
           <div className="flex flex-col flex-grow">
             <h3 className="font-bold text-2xl text-gray-800 dark:text-white mb-1">
-              {data.profile.name || "Cait Genevieve"}
+              {data.profile?.name}
             </h3>
             <div className="inline-flex text-gray-700 dark:text-gray-300 items-center mt-2">
-              {data.profile.isPrivate ? (
+              {data.profile?.isPrivate ? (
                 <>
                   <FaLock className="mr-1" />
                   Tài khoản riêng tư
@@ -82,49 +89,53 @@ const ProfileHeader = () => {
             </div>
           </div>
           <div className="flex flex-col items-start mr-20">
-            <Link href={`/profile/followingList/${data.profile.id}`}>
+            <Link href={`/profile/${data.profile?.id}/followingList`}>
               <span className="cursor-pointer">
                 Người theo dõi{" "}
                 <strong className="text-black dark:text-white">
-                  {data.profile._count.following}
+                  {data.profile?._count.follower}
                 </strong>
               </span>
             </Link>
             <br />
 
-            <Link href={`/profile/followerList/${data.profile.id}`}>
+            <Link href={`/profile/${data.profile?.id}/followerList`}>
               <span className="cursor-pointer">
                 Đang theo dõi{" "}
                 <strong className="text-black dark:text-white">
-                  {data.profile._count.follower}
+                  {data.profile?._count.following}
                 </strong>{" "}
                 người
               </span>
             </Link>
             <br />
-            <span className="cursor-pointer">
-              Bài viết{" "}
-              <strong className="text-black dark:text-white">
-                {data.profile._count.posts}
-              </strong>
-            </span>
+            <Link href={`/profile/${data.profile?.id}`}>
+              <span className="cursor-pointer">
+                Bài viết{" "}
+                <strong className="text-black dark:text-white">
+                  {data.profile?._count.posts}
+                </strong>
+              </span>
+            </Link>
           </div>
         </div>
         <div className="flex gap-2 px-2 ml-6 mt-2 border-b border-gray-300 dark:border-gray-700">
-          {Number(data.profile.id) !== Number(userId) ? (
+          {Number(data.profile?.id) !== Number(userId) ? (
             <>
-              <button
-                onClick={() => handleFollow(data.profile.id)}
-                className="w-24 rounded-full bg-blue-600 dark:bg-blue-800 text-white hover:bg-blue-800 dark:hover:bg-blue-900 px-2 py-1"
-              >
-                {isFollowing ? "UnFollow" : "Follow"}
-              </button>
-              <button
-                onClick={() => handleMessage()}
-                className="w-24 rounded-full border-2 border-gray-400 dark:border-gray-700 font-semibold text-black dark:text-white px-2 py-1"
-              >
-                Nhắn tin
-              </button>
+              <div className="p-3">
+                <Button
+                  onClick={() => mutate(data.profile.id)}
+                  className="bg-blue-500 text-white font-semibold py-1 px-2 rounded hover:bg-blue-600 w-24 rounded-full mr-2"
+                >
+                  {data.isFollowing ? "Bỏ theo dõi" : "Theo dõi"}
+                </Button>
+                <Button
+                  onClick={() => handleMessage()}
+                  className="bg-blue-500 text-white font-semibold py-1 px-2 rounded hover:bg-blue-600 w-24 rounded-full"
+                >
+                  Nhắn tin
+                </Button>
+              </div>
             </>
           ) : (
             <div className="px-4 py-4 ml-20">
