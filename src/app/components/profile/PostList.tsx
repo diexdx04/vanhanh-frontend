@@ -12,6 +12,7 @@ import Liked from "../Like";
 import PostDetailModal from "../PostDetail";
 import ImageDetail from "../ImageDetail";
 import Post from "../Post";
+import { useQuery } from "@tanstack/react-query";
 
 type User = {
   id: number;
@@ -32,16 +33,12 @@ type NewsItem = {
   createdAt: Date;
 };
 
-console.log("day la posstLIst");
-
 interface PostListProps {
   profileId: number;
   profileName: string;
 }
 
 const PostList: React.FC<PostListProps> = ({ profileId, profileName }) => {
-  console.log(profileId, 123456789);
-
   const { api } = useApi();
   const [newsData, setNewsData] = useState<NewsItem[]>([]);
   const [lastPostId, setLastPostId] = useState<number | null>(null);
@@ -53,6 +50,15 @@ const PostList: React.FC<PostListProps> = ({ profileId, profileName }) => {
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
   const currentUserId = parseInt(localStorage.getItem("userId") || "0");
+  const userId = Number(localStorage.getItem("userId"));
+
+  const { data } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      return await api("GET", `/profile/${profileId}`, {});
+    },
+    enabled: !!profileId,
+  });
 
   const fetchPosts = async () => {
     if (loading || !isEndOfPosts) return;
@@ -86,7 +92,7 @@ const PostList: React.FC<PostListProps> = ({ profileId, profileName }) => {
 
   useEffect(() => {
     fetchPosts();
-  }, [profileId]); // Thêm profileId vào dependency array
+  }, [profileId]);
 
   useEffect(() => {
     socket.on("newPost", (newPost) => {
@@ -185,12 +191,14 @@ const PostList: React.FC<PostListProps> = ({ profileId, profileName }) => {
   };
 
   return (
-    <div className="max-w-screen-lg mx-auto w-full ">
-      {" "}
+    <div className="max-w-screen-lg mx-auto w-full">
       {contextHolder}
-      <div className="max-w-xl w-full bg-white rounded-md shadow-md mb-6 p-6">
-        <Post />
-      </div>
+      {profileId === userId && (
+        <div className="max-w-xl w-full bg-white rounded-md shadow-md mb-6 p-6">
+          <Post />
+        </div>
+      )}
+
       {newsData.map((news) => (
         <div
           key={news.id}
@@ -266,6 +274,7 @@ const PostList: React.FC<PostListProps> = ({ profileId, profileName }) => {
           </div>
         </div>
       ))}
+
       <Button
         onClick={loadMorePosts}
         disabled={loading || !isEndOfPosts}
@@ -275,6 +284,7 @@ const PostList: React.FC<PostListProps> = ({ profileId, profileName }) => {
       >
         Tải thêm bài viết
       </Button>
+
       {selectedPostId && (
         <PostDetailModal
           onclick={isModalVisible}
@@ -282,6 +292,7 @@ const PostList: React.FC<PostListProps> = ({ profileId, profileName }) => {
           postIdDetail={selectedPostId}
         />
       )}
+
       {selectedImageUrl && (
         <ImageDetail imageUrl={selectedImageUrl} onClose={closeImageDetail} />
       )}

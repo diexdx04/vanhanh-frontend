@@ -8,15 +8,13 @@ export default function LayoutProfile({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <QueryProvider>
-          <Header />
+    <>
+      <QueryProvider>
+        <Header />
 
-          <ProfileHeader />
-          {children}
-        </QueryProvider>
-      </body>
-    </html>
+        <ProfileHeader />
+        {children}
+      </QueryProvider>
+    </>
   );
 }

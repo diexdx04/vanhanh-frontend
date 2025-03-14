@@ -24,8 +24,6 @@ const AccountPage = () => {
     return <p>Error: {error.message}</p>;
   }
 
-  console.log(data, 8888);
-
   return (
     <div className="bg-gray-100 p-10">
       <div className="max-w-xl mx-auto bg-white shadow-md rounded-lg p-6">

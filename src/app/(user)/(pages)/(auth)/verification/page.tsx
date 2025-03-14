@@ -20,7 +20,6 @@ const VerificationPage = () => {
   const { api } = useApi();
 
   const userId = localStorage.getItem("userId");
-  console.log(userId);
 
   useEffect(() => {
     socket.on("isVerified-" + userId, (isVerified) => {
@@ -67,7 +66,6 @@ const VerificationPage = () => {
     try {
       await api("POST", "verify", {});
       messageApi.success("Đã gửi lại mã xác thực!");
-      console.log("Mã xác thực đã được gửi lại.");
     } catch (error) {
       messageApi.error(
         "Không thể gửi mã xác thực. Vui lòng liên hệ với quản trị viên."
