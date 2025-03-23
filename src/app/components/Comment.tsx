@@ -44,6 +44,7 @@ const Comment: React.FC<CommentTableProps> = ({ postId }) => {
       }
     };
     fetchComments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postId]);
 
   useEffect(() => {

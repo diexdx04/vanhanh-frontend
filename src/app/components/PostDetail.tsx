@@ -57,6 +57,7 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({
         }
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postIdDetail]);
 
   const handleImageClick = (imageUrl: string) => {

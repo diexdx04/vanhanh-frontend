@@ -91,6 +91,7 @@ const PostList: React.FC<PostListProps> = ({ profileId, profileName }) => {
 
   useEffect(() => {
     fetchPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profileId]);
 
   useEffect(() => {

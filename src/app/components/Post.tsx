@@ -13,12 +13,17 @@ type FieldType = {
 
 const Post = () => {
   const { api } = useApi();
-  const token = localStorage.getItem("token");
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
 
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
+  }, []);
   const onFinish: FormProps<FieldType>["onFinish"] = async () => {
     const values = await form.validateFields();
 

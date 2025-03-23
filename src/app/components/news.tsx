@@ -1,3 +1,4 @@
+"use client";
 import { socket } from "@/api/instance";
 import useApi from "@/api/useApi";
 import { time } from "@/time/time";
@@ -43,7 +44,12 @@ const News = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
-  const currentUserId = parseInt(localStorage.getItem("userId") || "0");
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const id = localStorage.getItem("userId");
+    setCurrentUserId(id ? parseInt(id) : null);
+  }, []);
 
   const fetchPosts = async () => {
     if (loading || !isEndOfPosts) return;
@@ -76,6 +82,7 @@ const News = () => {
 
   useEffect(() => {
     fetchPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

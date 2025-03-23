@@ -5,11 +5,11 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { Button, Spin, Typography } from "antd";
 import useMessage from "antd/es/message/useMessage";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 const { Title } = Typography;
 
-const VerificationPage = () => {
+const VerificationContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState("Đang xác thực...");
@@ -34,6 +34,7 @@ const VerificationPage = () => {
     if (isVerified) {
       router.push("/news");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isVerified]);
 
   useEffect(() => {
@@ -60,6 +61,7 @@ const VerificationPage = () => {
     };
 
     verifyToken();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const handleResendCode = async () => {
@@ -92,6 +94,16 @@ const VerificationPage = () => {
         </>
       )}
     </div>
+  );
+};
+
+const VerificationPage = () => {
+  return (
+    <Suspense
+      fallback={<Spin indicator={<LoadingOutlined spin />} size="large" />}
+    >
+      <VerificationContent />
+    </Suspense>
   );
 };
 
