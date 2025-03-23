@@ -1,6 +1,6 @@
 "use client";
 import useApi from "@/api/useApi";
-import type { FormProps } from "antd";
+import type { FormProps, UploadFile } from "antd";
 import { Button, Form, Input, message, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
@@ -8,7 +8,7 @@ import Image from "next/image";
 
 type FieldType = {
   content: string;
-  fileList: any[];
+  fileList: UploadFile[];
 };
 
 const Post = () => {
@@ -46,10 +46,12 @@ const Post = () => {
         formData.append("content", values.content);
 
         const fileList = Array.isArray(values.fileList) ? values.fileList : [];
-        fileList.forEach((file: any) => {
-          console.log(file.originFileObj, 777);
+        fileList.forEach((file: UploadFile) => {
+          const originFile = file.originFileObj;
 
-          formData.append("image", file.originFileObj);
+          if (originFile) {
+            formData.append("image", originFile);
+          }
         });
 
         await api("POST", "posts", formData);
@@ -99,8 +101,8 @@ const Post = () => {
               accept="image/*"
               onChange={(info) => {
                 form.setFieldsValue({ fileList: info.fileList });
-                const urls = info.fileList.map((file: any) =>
-                  URL.createObjectURL(file.originFileObj)
+                const urls = info.fileList.map((file: UploadFile) =>
+                  URL.createObjectURL(file.originFileObj!)
                 );
                 setImageUrls(urls);
               }}

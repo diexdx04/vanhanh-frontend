@@ -8,6 +8,9 @@ import "moment/locale/vi";
 import React, { useEffect, useState } from "react";
 
 moment.locale("vi");
+type CommentFormValues = {
+  newComment: string;
+};
 
 type Comment = {
   id: number;
@@ -52,7 +55,7 @@ const Comment: React.FC<CommentTableProps> = ({ postId }) => {
     };
   }, [postId]);
 
-  const handleSubmitComment = async (values: any) => {
+  const handleSubmitComment = async (values: CommentFormValues) => {
     try {
       await api("POST", `/posts/${postId}/comment`, {
         content: values.newComment,

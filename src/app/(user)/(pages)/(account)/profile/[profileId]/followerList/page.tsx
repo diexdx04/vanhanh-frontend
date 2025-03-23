@@ -1,12 +1,11 @@
 "use client";
 import useApi from "@/api/useApi";
+import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Input, Spin, Tooltip } from "antd";
-import { useParams } from "next/navigation";
-import React, { useState } from "react";
-import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
-import { FaLock } from "react-icons/fa";
 import Image from "next/image";
+import { useParams } from "next/navigation";
+import { FaLock } from "react-icons/fa";
 
 interface Follower {
   id: number;

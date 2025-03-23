@@ -21,6 +21,7 @@ const Page: React.FC = () => {
 
   const mutation = useMutation({
     mutationFn: async (data: FieldType) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { confirmPassword, ...dataToSend } = data;
       const response = await instance.post("/user", dataToSend);
       return response.data.data;

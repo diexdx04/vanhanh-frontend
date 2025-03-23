@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { instance } from "./instance";
+import { AxiosError } from "axios";
 
 const useApi = () => {
   const router = useRouter();
@@ -50,8 +51,8 @@ const useApi = () => {
         data,
       });
       return response.data.data;
-    } catch (error: any) {
-      if (error.response) {
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && error.response) {
         const errorCode = error.response.data.message;
 
         if (errorCode === "TOKEN_EXPIRED") {

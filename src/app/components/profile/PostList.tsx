@@ -2,17 +2,16 @@ import { socket } from "@/api/instance";
 import useApi from "@/api/useApi";
 import { time } from "@/time/time";
 import { Button, Dropdown, message, Popconfirm, Space } from "antd";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { FaRegComment } from "react-icons/fa";
 import axios from "axios";
 import moment from "moment";
+import Image from "next/image";
 import Link from "next/link";
-import Liked from "../Like";
-import PostDetailModal from "../PostDetail";
+import { useEffect, useState } from "react";
+import { FaRegComment } from "react-icons/fa";
 import ImageDetail from "../ImageDetail";
+import Liked from "../Like";
 import Post from "../Post";
-import { useQuery } from "@tanstack/react-query";
+import PostDetailModal from "../PostDetail";
 
 type User = {
   id: number;
@@ -52,13 +51,13 @@ const PostList: React.FC<PostListProps> = ({ profileId, profileName }) => {
   const currentUserId = parseInt(localStorage.getItem("userId") || "0");
   const userId = Number(localStorage.getItem("userId"));
 
-  const { data } = useQuery({
-    queryKey: ["profile"],
-    queryFn: async () => {
-      return await api("GET", `/profile/${profileId}`, {});
-    },
-    enabled: !!profileId,
-  });
+  // const { data } = useQuery({
+  //   queryKey: ["profile"],
+  //   queryFn: async () => {
+  //     return await api("GET", `/profile/${profileId}`, {});
+  //   },
+  //   enabled: !!profileId,
+  // });
 
   const fetchPosts = async () => {
     if (loading || !isEndOfPosts) return;
