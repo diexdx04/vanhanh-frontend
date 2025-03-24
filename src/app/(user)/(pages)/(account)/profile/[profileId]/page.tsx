@@ -31,7 +31,7 @@ const Page = () => {
 
   return (
     <>
-      {data.profile.isPrivate && data.isFollowing === false ? (
+      {data.profile.isPrivate && data?.isFollowing === false ? (
         <div className="flex flex-col items-center mt-20">
           <div className="text-6xl mb-4">
             <i className="">

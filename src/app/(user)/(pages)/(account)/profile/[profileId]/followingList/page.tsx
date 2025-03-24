@@ -46,7 +46,7 @@ const Page = () => {
 
   const { mutate } = useMutation({
     mutationFn: async (followingId: number) => {
-      await api("DELETE", "/profile/follow", { followingId });
+      await api("DELETE", `/profile/${profileId}/follow`, { followingId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
