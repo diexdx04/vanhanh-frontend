@@ -35,7 +35,7 @@ const Page = () => {
   } = useQuery<Following[]>({
     queryKey: ["following"],
     queryFn: async () => {
-      if (profile.profile.isPrivate && profile.isFollowing === false) {
+      if (profile.profile?.isPrivate && profile?.isFollowing === false) {
         return [];
       }
 
@@ -65,7 +65,7 @@ const Page = () => {
 
   return (
     <div>
-      {profile.profile.isPrivate && profile.isFollowing === false ? (
+      {profile.data?.isPrivate && profile?.isFollowing === false ? (
         <div className="flex flex-col items-center mt-20">
           <div className="text-6xl mb-4">
             <i className="">
@@ -102,9 +102,14 @@ const Page = () => {
                     <span className="text-gray-500">avt</span>
                   </div>
                   <h2 className="font-bold mt-2">{following.name}</h2>
-                  <Button className="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600">
-                    Theo dõi
-                  </Button>
+                  {userId !== following.id && (
+                    <Button
+                      onClick={() => mutate(following.id)}
+                      className="bg-blue-500 text-white font-semibold py-1 px-2 rounded hover:bg-blue-600 w-24 mr-2"
+                    >
+                      {profile.isFollowing ? "Bỏ theo dõi" : "Theo dõi"}
+                    </Button>
+                  )}
                   {userId === profileId && (
                     <Popconfirm
                       placement="top"

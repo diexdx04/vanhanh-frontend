@@ -25,7 +25,7 @@ const AccountPage = () => {
   }
 
   return (
-    <div className="bg-gray-100 p-10">
+    <div className="bg-gray-100 p-10 h-screen w-screen">
       <div className="max-w-xl mx-auto bg-white shadow-md rounded-lg p-6">
         <h2 className="text-lg font-bold mb-4">Chỉnh sửa trang cá nhân</h2>
 

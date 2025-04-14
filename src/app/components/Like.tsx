@@ -35,8 +35,6 @@ const Liked: React.FC<LikeProps> = ({
   }, [initiallyLiked]);
 
   const fetchLikes = async () => {
-    console.log(initiallyLiked, 888);
-
     console.log(postId, 66);
 
     try {
