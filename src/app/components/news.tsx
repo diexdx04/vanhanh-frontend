@@ -3,15 +3,15 @@ import { socket } from "@/api/instance";
 import useApi from "@/api/useApi";
 import { time } from "@/time/time";
 import { Button, Dropdown, message, Popconfirm, Space } from "antd";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { FaRegComment } from "react-icons/fa";
-import Liked from "./Like";
-import PostDetailModal from "./PostDetail";
-import ImageDetail from "./ImageDetail";
 import axios from "axios";
 import moment from "moment";
+import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { FaRegComment } from "react-icons/fa";
+import { usePhoto } from "../context/PhotoContext";
+import Liked from "./Like";
+import PostDetailModal from "./PostDetail";
 
 type User = {
   id: number;
@@ -42,7 +42,7 @@ const News = () => {
   const [loading, setLoading] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
+  const { setPhotoData } = usePhoto();
   const [messageApi, contextHolder] = message.useMessage();
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
@@ -112,14 +112,6 @@ const News = () => {
     setSelectedPostId(null);
   };
 
-  const handleImageClick = (imageUrl: string) => {
-    setSelectedImageUrl(imageUrl);
-  };
-
-  const closeImageDetail = () => {
-    setSelectedImageUrl(null);
-  };
-
   const handleOptions = async (key: string, newsId: number) => {
     switch (key) {
       case "delete":
@@ -182,6 +174,16 @@ const News = () => {
     return items;
   };
 
+  const handleImageClick = (img: NewsItem) => {
+    console.log(img, 888);
+
+    setPhotoData({
+      isAvatar: false,
+      authorId: img.authorId,
+      createdAt: img.createdAt,
+    });
+  };
+
   return (
     <div>
       {contextHolder}
@@ -235,20 +237,27 @@ const News = () => {
           {news.images && (
             <div className="flex">
               {news.images.slice(0, 3).map((image) => (
-                <div
+                <Link
                   key={image.id}
-                  className="flex-1 mr-2 relative cursor-pointer"
-                  onClick={() => handleImageClick(image.url)}
+                  onClick={() => handleImageClick(news)}
+                  href={`/photo-detail?imageUrl=${encodeURIComponent(
+                    image.url
+                  )}`}
                 >
-                  <Image
-                    src={image.url}
-                    alt={`Image ${image.id}`}
-                    layout="responsive"
-                    width={100}
-                    height={100}
-                    className="rounded-md"
-                  />
-                </div>
+                  <div
+                    key={image.id}
+                    className="flex-1 mr-2 relative cursor-pointer"
+                  >
+                    <Image
+                      src={image.url}
+                      alt={`Image ${image.id}`}
+                      layout="responsive"
+                      width={100}
+                      height={100}
+                      className="rounded-md"
+                    />
+                  </div>
+                </Link>
               ))}
               {news.images.length > 3 && (
                 <div className="flex-1 relative flex items-center justify-center bg-gray-200 rounded-md">
@@ -293,10 +302,6 @@ const News = () => {
           onClose={closeDetailPost}
           postIdDetail={selectedPostId}
         />
-      )}
-
-      {selectedImageUrl && (
-        <ImageDetail imageUrl={selectedImageUrl} onClose={closeImageDetail} />
       )}
     </div>
   );

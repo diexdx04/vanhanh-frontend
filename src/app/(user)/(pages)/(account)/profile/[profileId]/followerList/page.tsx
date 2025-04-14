@@ -18,6 +18,7 @@ const Page = () => {
 
   const params = useParams();
   const profileId = Number(params.profileId);
+
   const { api } = useApi();
   const userId = Number(localStorage.getItem("userId"));
 
@@ -28,17 +29,23 @@ const Page = () => {
     },
     enabled: !!profileId,
   });
+  console.log(1111, profile);
 
-  const { data, isLoading, error } = useQuery<Follower[]>({
+  const {
+    data: follower,
+    isLoading,
+    error,
+  } = useQuery<Follower[]>({
     queryKey: ["follower"],
     queryFn: async () => {
-      if (profile.profile.isPrivate && profile.isFollowing === false) {
+      if (profile.profile?.isPrivate && profile?.isFollowing === false) {
         return [];
       }
-      return await api("GET", `profile/${profileId}/follower`, {});
+      return await api("GET", `/profile/${profileId}/follower`, {});
     },
     enabled: profile?.isFollowing,
   });
+  console.log(follower, 9999);
 
   const { mutate } = useMutation({
     mutationFn: async (followingId: number) => {
@@ -61,7 +68,7 @@ const Page = () => {
 
   return (
     <div>
-      {profile.profile.isPrivate && profile.isFollowing === false ? (
+      {profile.data?.isPrivate && profile?.isFollowing === false ? (
         <div className="flex flex-col items-center mt-20">
           <div className="text-6xl mb-4">
             <i className="">
@@ -89,7 +96,7 @@ const Page = () => {
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {data?.map((follower) => (
+              {follower?.map((follower) => (
                 <div
                   key={follower.id}
                   className="bg-white shadow-md rounded-lg p-4 flex flex-col items-center border border-gray-400"

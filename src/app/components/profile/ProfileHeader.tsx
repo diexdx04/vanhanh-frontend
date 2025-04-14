@@ -54,8 +54,7 @@ const ProfileHeader = () => {
       content: "Tính năng đang phát triển!",
     });
   };
-
-  console.log(data, 12345);
+  console.log(Number(data.data?.id), Number(userId), 87878);
 
   return (
     <div>
@@ -63,7 +62,7 @@ const ProfileHeader = () => {
       <div className="max-w-full mx-auto bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-lg">
         <div className="border-b px-4 pb-6 flex items-center">
           <Image
-            src={data.profile?.avatars?.[0]?.url || "/image/avt.jpg"}
+            src={data.data?.avatars?.[0]?.url || "/image/avt.jpg"}
             alt="User Avatar"
             width={180}
             height={180}
@@ -72,10 +71,10 @@ const ProfileHeader = () => {
           />
           <div className="flex flex-col flex-grow">
             <h3 className="font-bold text-2xl text-gray-800 dark:text-white mb-1">
-              {data.profile?.name}
+              {data.data?.name}
             </h3>
             <div className="inline-flex text-gray-700 dark:text-gray-300 items-center mt-2">
-              {data.profile?.isPrivate ? (
+              {data.data?.isPrivate ? (
                 <>
                   <FaLock className="mr-1" />
                   Tài khoản riêng tư
@@ -89,42 +88,42 @@ const ProfileHeader = () => {
             </div>
           </div>
           <div className="flex flex-col items-start mr-20">
-            <Link href={`/profile/${data.profile?.id}/followingList`}>
+            <Link href={`/profile/${data.data?.id}/followingList`}>
               <span className="cursor-pointer">
                 Người theo dõi{" "}
                 <strong className="text-black dark:text-white">
-                  {data.profile?._count.follower}
+                  {data.data?._count.follower}
                 </strong>
               </span>
             </Link>
             <br />
 
-            <Link href={`/profile/${data.profile?.id}/followerList`}>
+            <Link href={`/profile/${data.data?.id}/followerList`}>
               <span className="cursor-pointer">
                 Đang theo dõi{" "}
                 <strong className="text-black dark:text-white">
-                  {data.profile?._count.following}
+                  {data.data?._count.following}
                 </strong>{" "}
                 người
               </span>
             </Link>
             <br />
-            <Link href={`/profile/${data.profile?.id}`}>
+            <Link href={`/profile/${data.data?.id}`}>
               <span className="cursor-pointer">
                 Bài viết{" "}
                 <strong className="text-black dark:text-white">
-                  {data.profile?._count.posts}
+                  {data.data?._count.posts}
                 </strong>
               </span>
             </Link>
           </div>
         </div>
         <div className="flex gap-2 px-2 ml-6 mt-2 border-b border-gray-300 dark:border-gray-700">
-          {Number(data.profile?.id) !== Number(userId) ? (
+          {Number(data.data?.id) !== Number(userId) ? (
             <>
               <div className="p-3">
                 <Button
-                  onClick={() => mutate(data.profile.id)}
+                  onClick={() => mutate(data.data.id)}
                   className="bg-blue-500 text-white font-semibold py-1 px-2 rounded hover:bg-blue-600 w-24 rounded-full mr-2"
                 >
                   {data.isFollowing ? "Bỏ theo dõi" : "Theo dõi"}
@@ -139,7 +138,7 @@ const ProfileHeader = () => {
             </>
           ) : (
             <div className="px-4 py-4 ml-20">
-              <Link href={"/profile-setting"}>
+              <Link href={"/setting"}>
                 <button className="flex-1 rounded-full bg-blue-600 dark:bg-blue-800 text-white hover:bg-blue-800 dark:hover:bg-blue-900 px-4 py-2">
                   Chỉnh sửa trang cá nhân
                 </button>
