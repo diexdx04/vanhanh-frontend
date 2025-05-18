@@ -1,6 +1,5 @@
 "use client";
 import useApi from "@/api/useApi";
-import { usePhoto } from "@/app/context/PhotoContext";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "antd";
 import Image from "next/image";
@@ -12,8 +11,8 @@ import { FaLock } from "react-icons/fa";
 interface ImageType {
   url: string;
   createdAt: Date;
-  isAvatar: boolean;
-  authorId: number;
+  id: string;
+  isAvt: boolean;
 }
 
 interface PhotoResponse {
@@ -27,7 +26,6 @@ const Page = () => {
   const { api } = useApi();
   const [photos, setPhotos] = useState<ImageType[]>([]);
   const [isEndOfPhotos, setIsEndOfPhoto] = useState(true);
-  const { setPhotoData } = usePhoto();
   const { data: profile } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
@@ -68,13 +66,6 @@ const Page = () => {
     setPage((prevPage) => prevPage + 1);
     refetch();
   };
-  const handleImageClick = (img: ImageType) => {
-    setPhotoData({
-      isAvatar: img.isAvatar,
-      authorId: img.authorId,
-      createdAt: img.createdAt,
-    });
-  };
 
   return (
     <div>
@@ -97,10 +88,7 @@ const Page = () => {
                 {photos.map((img: ImageType, index: number) => (
                   <Link
                     key={index}
-                    onClick={() => handleImageClick(img)}
-                    href={`/photo-detail?imageUrl=${encodeURIComponent(
-                      img.url
-                    )}`}
+                    href={`/photo-detail?photoId=${img.id}&setA=${img.isAvt}`}
                   >
                     <div className="flex items-center justify-center bg-gray-200 h-44 cursor-pointer">
                       <Image

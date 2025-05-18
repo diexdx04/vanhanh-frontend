@@ -10,6 +10,10 @@ const useApi = () => {
     return localStorage.getItem("token");
   };
 
+  const getUserId = () => {
+    return localStorage.getItem("userId");
+  };
+
   const getRefreshToken = (): string | null => {
     const refreshToken = Cookies.get("refreshToken");
     return refreshToken !== undefined ? refreshToken : null;
@@ -21,8 +25,10 @@ const useApi = () => {
       const response = await instance.post("/auth/refresh-token", {
         refreshToken,
       });
-      const { token } = response.data.data;
+      const { token, userId } = response.data.data;
       localStorage.setItem("token", token);
+      localStorage.setItem("userId", userId);
+
       return token;
     } catch (error) {
       router.push("/signin");
@@ -32,7 +38,10 @@ const useApi = () => {
 
   const api = async (method: string, url: string, data: object) => {
     const token = getToken();
+    const userId = getUserId();
     const refreshToken = getRefreshToken();
+
+    console.log(userId, 8787);
 
     try {
       if (token) {
@@ -43,6 +52,13 @@ const useApi = () => {
       } else {
         router.push("/signin");
         return;
+      }
+
+      if (!userId) {
+        console.log(3333);
+
+        const newToken = await refreshAccessToken();
+        instance.defaults.headers["Authorization"] = `Bearer ${newToken}`;
       }
 
       const response = await instance({

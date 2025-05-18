@@ -9,10 +9,10 @@ export const time = (date: Date): string => {
     return "vừa xong";
   } else if (seconds < 3600) {
     const minutes = Math.floor(seconds / 60);
-    return `${minutes} phút `;
+    return `${minutes} phút trước `;
   } else if (seconds < 86400) {
     const hours = Math.floor(seconds / 3600);
-    return `${hours} giờ `;
+    return `${hours} giờ trước`;
   } else {
     const days = Math.floor(seconds / 86400);
     if (days >= 1 && days <= 2) {

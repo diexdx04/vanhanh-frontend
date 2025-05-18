@@ -9,7 +9,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaRegComment } from "react-icons/fa";
-import { usePhoto } from "../context/PhotoContext";
 import Liked from "./Like";
 import PostDetailModal from "./PostDetail";
 
@@ -42,7 +41,6 @@ const News = () => {
   const [loading, setLoading] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { setPhotoData } = usePhoto();
   const [messageApi, contextHolder] = message.useMessage();
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
@@ -176,12 +174,6 @@ const News = () => {
 
   const handleImageClick = (img: NewsItem) => {
     console.log(img, 888);
-
-    setPhotoData({
-      isAvatar: false,
-      authorId: img.authorId,
-      createdAt: img.createdAt,
-    });
   };
 
   return (

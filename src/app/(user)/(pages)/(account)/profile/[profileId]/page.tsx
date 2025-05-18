@@ -1,7 +1,6 @@
 "use client";
 import useApi from "@/api/useApi";
 import PostList from "@/app/components/profile/PostList";
-import { usePhoto } from "@/app/context/PhotoContext";
 import { useQuery } from "@tanstack/react-query";
 import { Spin } from "antd";
 import Image from "next/image";
@@ -19,7 +18,6 @@ const Page = () => {
   const params = useParams();
   const profileId = Number(params.profileId);
   const { api } = useApi();
-  const { setPhotoData } = usePhoto();
 
   const { data: photo } = useQuery({
     queryKey: ["photo"],
@@ -53,12 +51,6 @@ const Page = () => {
 
   const handleImageClick = (img: ImageType) => {
     console.log(img, 888);
-
-    setPhotoData({
-      isAvatar: img.isAvatar,
-      authorId: img.authorId,
-      createdAt: img.createdAt,
-    });
   };
   return (
     <>
